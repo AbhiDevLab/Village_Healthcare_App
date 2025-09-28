@@ -58,9 +58,7 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  void _login(BuildContext context) async {
-    final auth = Provider.of<AuthProvider>(context, listen: false);
-
+  void _login(BuildContext context) {
     if (_mobileController.text.isEmpty ||
         _nameController.text.isEmpty ||
         _villageController.text.isEmpty) {
@@ -70,12 +68,77 @@ class LoginScreen extends StatelessWidget {
       return;
     }
 
-    await auth.loginWithMobile(
+    // Temporarily store details in provider
+    final auth = Provider.of<AuthProvider>(context, listen: false);
+    auth.loginWithMobile(
       _mobileController.text,
       _nameController.text,
       _villageController.text,
     );
 
-    // Navigation will happen automatically due to Consumer in main.dart
+    // Show OTP dialog
+    _showOtpDialog(context);
+  }
+
+  void _showOtpDialog(BuildContext context) {
+    final TextEditingController otpController = TextEditingController();
+    final auth = Provider.of<AuthProvider>(context, listen: false);
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        title: Text('Enter OTP'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('An OTP has been sent to ${_mobileController.text}.'),
+            SizedBox(height: 16),
+            TextField(
+              controller: otpController,
+              decoration: InputDecoration(labelText: 'OTP'),
+              keyboardType: TextInputType.number,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            child: Text('Cancel'),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+          ),
+          ElevatedButton(
+            child: Text('Verify'),
+            onPressed: () async {
+              final otp = otpController.text;
+              if (otp.isEmpty) {
+                // You might want to show a small error here
+                return;
+              }
+
+              final success = await auth.verifyOtpAndLogin(otp);
+
+              if (success) {
+                // The Consumer in main.dart will handle navigation.
+                // We just need to close the dialog.
+                if (Navigator.of(ctx).canPop()) {
+                  Navigator.of(ctx).pop();
+                }
+              } else {
+                // Show error if OTP is incorrect
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      content: Text(auth.error ?? 'Invalid OTP'),
+                      backgroundColor: Colors.red),
+                );
+                // Optionally close the dialog on failure too
+                Navigator.of(ctx).pop();
+              }
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

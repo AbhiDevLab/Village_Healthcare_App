@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import 'appointment_screen.dart';
+import 'telemedicine_screen.dart';
+import 'health_records_screen.dart';
+import 'emergency_screen.dart';
+import 'health_tips_screen.dart';
+import 'profile_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -55,37 +60,49 @@ class HomeScreen extends StatelessWidget {
                     'Book Appointment',
                     Icons.calendar_today,
                     Colors.blue,
-                    () => Navigator.push(context, MaterialPageRoute(builder: (_) => AppointmentScreen())),
+                    () => Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => AppointmentScreen())),
                   ),
                   _buildFeatureCard(
                     'Telemedicine',
                     Icons.video_call,
                     Colors.green,
-                    () => _showComingSoon(context),
+                    () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const TelemedicineScreen())),
                   ),
                   _buildFeatureCard(
                     'Health Records',
                     Icons.medical_services,
                     Colors.orange,
-                    () => _showComingSoon(context),
+                    () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => HealthRecordsScreen())),
                   ),
                   _buildFeatureCard(
                     'Emergency',
                     Icons.emergency,
                     Colors.red,
-                    () => _handleEmergency(context),
+                    () => Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => EmergencyScreen())),
                   ),
                   _buildFeatureCard(
                     'Health Tips',
                     Icons.article,
                     Colors.purple,
-                    () => _showComingSoon(context),
+                    () => Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => HealthTipsScreen())),
                   ),
                   _buildFeatureCard(
                     'My Profile',
                     Icons.person,
                     Colors.teal,
-                    () => _showComingSoon(context),
+                    () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const ProfileScreen())),
                   ),
                 ],
               ),
@@ -96,7 +113,8 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFeatureCard(String title, IconData icon, Color color, VoidCallback onTap) {
+  Widget _buildFeatureCard(
+      String title, IconData icon, Color color, VoidCallback onTap) {
     return Card(
       elevation: 4,
       child: InkWell(
@@ -135,25 +153,8 @@ class HomeScreen extends StatelessWidget {
   }
 
   void _handleEmergency(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Emergency Help'),
-        content: Text('Call nearest health center or ambulance?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              // Implement emergency call logic
-            },
-            child: Text('Call Help'),
-          ),
-        ],
-      ),
-    );
+    // This can be replaced by direct navigation if preferred
+    Navigator.push(
+        context, MaterialPageRoute(builder: (_) => EmergencyScreen()));
   }
 }
