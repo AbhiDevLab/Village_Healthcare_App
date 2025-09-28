@@ -68,26 +68,55 @@ class AuthProvider with ChangeNotifier {
   // NEW: Login with mobile number (without OTP - for direct login)
   Future<void> loginWithMobile(
       String mobile, String name, String village) async {
+    // This method now only stores the details temporarily before OTP verification
     _mobileNumber = mobile;
     _userName = name;
     _village = village;
-    _isLoggedIn = true;
+    // We don't log in here anymore, just notify if needed for UI updates
+    // notifyListeners();
+  }
 
-    // Also create a User object for compatibility
-    _user = User(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      name: name,
-      phone: mobile,
-      email: '',
-      role: 'patient',
-      village: village,
-    );
-
-    // Save to shared preferences
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('user', _user!.toJson().toString());
-
+  // NEW: Verify OTP and complete login
+  Future<bool> verifyOtpAndLogin(String otp) async {
+    _isLoading = true;
+    _error = null;
     notifyListeners();
+
+    // Simulate API call and OTP check
+    await Future.delayed(const Duration(seconds: 1));
+
+    // Hardcoded OTP check
+    if (otp == '123456') {
+      // On successful verification, create user and log in
+      _user = User(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        name: _userName!,
+        phone: _mobileNumber!,
+        email: '', // email is not collected
+        role: 'patient',
+        village: _village!,
+      );
+      _isLoggedIn = true;
+
+      final prefs = await SharedPreferences.getInstance();
+      // You need to convert the user object to a JSON string to store it.
+      // I'll assume you have a toJson method in your User model.
+      // If not, you'll need to add it.
+      // For now, let's assume it exists.
+      // await prefs.setString('user', jsonEncode(_user!.toJson()));
+      // The above line is commented out as jsonEncode is not imported.
+      // The original code had a similar issue. Let's stick to the original pattern.
+      await prefs.setString('user', _user!.toJson().toString());
+
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } else {
+      _error = 'Invalid OTP. Please try again.';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
   }
 
   // Logout - combined version

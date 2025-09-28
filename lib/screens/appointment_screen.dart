@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AppointmentScreen extends StatefulWidget {
-  const AppointmentScreen({Key? key}) : super(key: key);
+  final String? doctorName;
+  const AppointmentScreen({Key? key, this.doctorName}) : super(key: key);
 
   @override
   _AppointmentScreenState createState() => _AppointmentScreenState();
@@ -12,6 +13,14 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   TimeOfDay _selectedTime = TimeOfDay.now();
   String _selectedType = 'teleconsultation';
   String _selectedDoctor = 'Dr. Sharma';
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.doctorName != null) {
+      _selectedDoctor = widget.doctorName!;
+    }
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -52,7 +61,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
               child: ListTile(
                 leading: Icon(Icons.calendar_today, color: Colors.blue),
                 title: Text('Select Date'),
-                subtitle: Text('${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}'),
+                subtitle: Text(
+                    '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}'),
                 trailing: Icon(Icons.arrow_drop_down),
                 onTap: () => _selectDate(context),
               ),
@@ -78,17 +88,20 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Appointment Type', style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text('Appointment Type',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                     SizedBox(height: 10),
                     DropdownButtonFormField(
                       value: _selectedType,
                       items: ['teleconsultation', 'in_person']
                           .map((type) => DropdownMenuItem(
                                 value: type,
-                                child: Text(type.replaceAll('_', ' ').toUpperCase()),
+                                child: Text(
+                                    type.replaceAll('_', ' ').toUpperCase()),
                               ))
                           .toList(),
-                      onChanged: (value) => setState(() => _selectedType = value.toString()),
+                      onChanged: (value) =>
+                          setState(() => _selectedType = value.toString()),
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
                         contentPadding: EdgeInsets.symmetric(horizontal: 10),
@@ -107,14 +120,27 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Select Doctor', style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text('Select Doctor',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                     SizedBox(height: 10),
                     DropdownButtonFormField(
                       value: _selectedDoctor,
-                      items: ['Dr. Sharma', 'Dr. Patel', 'Dr. Kumar', 'Dr. Gupta']
-                          .map((doc) => DropdownMenuItem(value: doc, child: Text(doc)))
+                      items: [
+                        'Dr. Sharma',
+                        'Dr. Patel',
+                        'Dr. Kumar',
+                        'Dr. Gupta',
+                        'Dr. Rajesh Kumar',
+                        'Dr. Priya Singh',
+                        'Dr. Amit Sharma'
+                      ]
+                          .toSet() // Use a Set to remove duplicates
+                          .toList()
+                          .map((doc) =>
+                              DropdownMenuItem(value: doc, child: Text(doc)))
                           .toList(),
-                      onChanged: (value) => setState(() => _selectedDoctor = value.toString()),
+                      onChanged: (value) =>
+                          setState(() => _selectedDoctor = value.toString()),
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
                         contentPadding: EdgeInsets.symmetric(horizontal: 10),
